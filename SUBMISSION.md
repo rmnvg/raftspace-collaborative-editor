@@ -1,7 +1,7 @@
 # Submission
 
 - **Source repository:** https://github.com/rmnvg/raftspace-collaborative-editor
-- **Live product URL:** _not yet deployed — TODO. See "Deploying to Vercel" in `README.md` for exact steps (requires a hosted Supabase project and an authenticated Vercel account, neither available in the dev environment this was built in)._
+- **Live product URL:** https://raftspace-collaborative-editor.vercel.app
 - **Video URL:** _TODO — see `VIDEO_URL.txt`_
 
 ## Demo users
@@ -99,6 +99,15 @@ does read env files if present.
 Beyond these automated checks, the full flow below was verified manually
 against a real local Supabase instance and a real browser (not simulated
 or assumed) during development — see `AI_WORKFLOW.md` for how.
+
+**Production deployment itself was also smoke-tested against the live
+URL**, not just assumed to work because the build succeeded: `GET
+/api/session` confirmed the three demo users are reachable from the
+deployed app's Supabase connection, and a real `POST /api/documents` →
+`GET /api/documents` → `DELETE` round trip confirmed the deployed app can
+actually write to and read from the hosted database (the test document
+was deleted immediately after, so the live dashboard starts empty for
+reviewers).
 
 ## Quick reviewer flow
 

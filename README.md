@@ -5,7 +5,7 @@ format them with a Tiptap-based editor, import `.txt`/`.md` files, and share
 documents with other seeded demo users — all with server-enforced
 authorization on top of Supabase Postgres.
 
-**Live URL:** _not yet deployed — TODO_
+**Live URL:** https://raftspace-collaborative-editor.vercel.app
 
 ## Features
 
