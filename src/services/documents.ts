@@ -44,9 +44,10 @@ interface ShareRow {
   created_at: string;
 }
 
-// Only one foreign key runs from documents to app_users (owner_id), so
-// PostgREST can embed it unambiguously as "owner".
-const DOCUMENT_WITH_OWNER_SELECT = "*, owner:app_users(*)";
+// PostgREST also infers an implicit many-to-many path between documents and
+// app_users via document_shares, so the direct owner_id relationship must be
+// named explicitly — otherwise PostgREST rejects the embed as ambiguous.
+const DOCUMENT_WITH_OWNER_SELECT = "*, owner:app_users!documents_owner_id_fkey(*)";
 
 function toSummary(
   row: DocumentWithOwnerRow,
