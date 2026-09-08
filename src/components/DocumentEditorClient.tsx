@@ -96,8 +96,21 @@ export function DocumentEditorClient({ documentId }: { documentId: string }) {
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      // beforeunload only guards a full page unload/reload — it never
+      // fires for client-side navigation (e.g. clicking "Back to
+      // documents" mid-debounce). Flush any pending edit with a
+      // keepalive request so it isn't silently dropped; the browser
+      // keeps it alive past this component's unmount.
+      if (dirtyRef.current) {
+        void fetch(`/api/documents/${documentId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: titleRef.current, content: contentRef.current }),
+          keepalive: true,
+        });
+      }
     };
-  }, []);
+  }, [documentId]);
 
   function markDirty() {
     dirtyRef.current = true;
@@ -203,7 +216,7 @@ export function DocumentEditorClient({ documentId }: { documentId: string }) {
 
         <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 p-4 sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <label className="sr-only" htmlFor="document-title">
                 Document title
               </label>
@@ -215,7 +228,7 @@ export function DocumentEditorClient({ documentId }: { documentId: string }) {
                 placeholder="Untitled document"
                 className="min-w-0 flex-1 border-none bg-transparent text-xl font-semibold text-slate-900 outline-none focus:ring-0 disabled:cursor-not-allowed disabled:text-slate-500"
               />
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2">
                 <span
                   className={
                     isOwner

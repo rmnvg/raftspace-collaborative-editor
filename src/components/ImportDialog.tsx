@@ -108,7 +108,7 @@ export function ImportDialog({ open, onClose, onImported }: ImportDialogProps) {
 
         <label
           htmlFor="import-file-input"
-          className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500 transition hover:border-indigo-400 hover:bg-indigo-50/50"
+          className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500 transition hover:border-indigo-400 hover:bg-indigo-50/50 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-500/50"
         >
           <Upload className="h-5 w-5 text-slate-400" aria-hidden="true" />
           {selectedFile ? (

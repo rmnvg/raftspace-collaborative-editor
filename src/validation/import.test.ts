@@ -54,6 +54,16 @@ describe("validateImportFile", () => {
     if (!result.ok) expect(result.message).toMatch(/1 MB/);
   });
 
+  it("rejects a negative or non-integer size rather than crashing", () => {
+    expect(validateImportFile({ name: "notes.txt", size: -1 }).ok).toBe(false);
+    expect(validateImportFile({ name: "notes.txt", size: 1.5 }).ok).toBe(false);
+  });
+
+  it("rejects a filename with no extension", () => {
+    const result = validateImportFile({ name: "notes", size: 1024 });
+    expect(result.ok).toBe(false);
+  });
+
   it("accepts a file exactly at the 1 MB limit", () => {
     const result = validateImportFile({ name: "notes.txt", size: MAX_IMPORT_FILE_SIZE_BYTES });
     expect(result.ok).toBe(true);

@@ -70,9 +70,15 @@ export function Dashboard() {
   }, [sessionStatus, currentUser?.id, loadDocuments]);
 
   async function handleSwitchUser(userId: string) {
-    if (userId === currentUser?.id) return;
+    const previousUser = currentUser;
+    if (userId === previousUser?.id) return;
     setActionError(null);
     setIsSwitchingUser(true);
+    // Optimistic update: reflect the pick immediately so the <select> (a
+    // controlled input) doesn't visibly snap back to the old value for the
+    // moment before the request resolves.
+    const optimisticUser = users.find((user) => user.id === userId) ?? null;
+    if (optimisticUser) setCurrentUser(optimisticUser);
     try {
       const response = await fetch("/api/session", {
         method: "POST",
@@ -82,6 +88,7 @@ export function Dashboard() {
       if (!response.ok) throw new Error("Failed to switch user");
       await loadSession();
     } catch {
+      setCurrentUser(previousUser);
       setActionError("Couldn't switch users. Please try again.");
     } finally {
       setIsSwitchingUser(false);

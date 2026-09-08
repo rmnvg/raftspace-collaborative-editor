@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { internalError, jsonError } from "@/lib/http";
 import {
   DEMO_SESSION_COOKIE,
   findDemoUserById,
@@ -12,10 +13,7 @@ export async function GET() {
     const session = await resolveDemoSession();
     return NextResponse.json(session);
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to load session" },
-      { status: 500 },
-    );
+    return internalError("GET /api/session", error);
   }
 }
 
@@ -26,19 +24,24 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return jsonError("Invalid JSON body", 400);
   }
 
   const parsed = selectUserSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "A valid userId is required" }, { status: 400 });
+    return jsonError("A valid userId is required", 400);
   }
 
-  // The submitted id is only a *candidate* — it is checked against the real
-  // seeded users in the database before it is trusted for anything.
-  const user = await findDemoUserById(parsed.data.userId);
+  let user;
+  try {
+    // The submitted id is only a *candidate* — it is checked against the
+    // real seeded users in the database before it is trusted for anything.
+    user = await findDemoUserById(parsed.data.userId);
+  } catch (error) {
+    return internalError("POST /api/session", error);
+  }
   if (!user) {
-    return NextResponse.json({ error: "Unknown demo user" }, { status: 400 });
+    return jsonError("Unknown demo user", 400);
   }
 
   cookies().set(DEMO_SESSION_COOKIE, user.id, {
