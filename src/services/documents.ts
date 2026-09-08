@@ -127,11 +127,20 @@ export async function listDocumentsForUser(
 export async function createDocument(
   ownerId: string,
   title: string,
+  content?: TiptapDocument,
 ): Promise<DocumentDetail> {
   const supabase = getSupabaseAdminClient();
+  const insertPayload: { title: string; owner_id: string; content?: Record<string, unknown> } = {
+    title,
+    owner_id: ownerId,
+  };
+  if (content !== undefined) {
+    insertPayload.content = content as unknown as Record<string, unknown>;
+  }
+
   const { data, error } = await supabase
     .from("documents")
-    .insert({ title, owner_id: ownerId })
+    .insert(insertPayload)
     .select(DOCUMENT_WITH_OWNER_SELECT)
     .single()
     .returns<DocumentWithOwnerRow>();

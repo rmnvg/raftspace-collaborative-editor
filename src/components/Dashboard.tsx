@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, Plus, Upload } from "lucide-react";
 import { Header } from "@/components/Header";
 import { UserSwitcher } from "@/components/UserSwitcher";
+import { ImportDialog } from "@/components/ImportDialog";
 import { DocumentSection, type AsyncStatus } from "@/components/DocumentSection";
 import type { AppUser } from "@/services/users";
 import type { DocumentSummary } from "@/types/document";
@@ -28,6 +29,7 @@ export function Dashboard() {
 
   const [isSwitchingUser, setIsSwitchingUser] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const loadSession = useCallback(async () => {
@@ -140,16 +142,22 @@ export function Dashboard() {
             </button>
             <button
               type="button"
-              disabled
-              title="Coming in the next step"
-              aria-label="Import file — coming in the next step"
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-500 shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => setIsImportDialogOpen(true)}
+              disabled={isBusy}
+              title="Import a .txt or .md file"
+              className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Upload className="h-4 w-4" aria-hidden="true" />
               Import file
             </button>
           </div>
         </div>
+
+        <ImportDialog
+          open={isImportDialogOpen}
+          onClose={() => setIsImportDialogOpen(false)}
+          onImported={(documentId) => router.push(`/documents/${documentId}`)}
+        />
 
         {sessionStatus === "error" && (
           <div className="mb-6 flex flex-col items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">

@@ -1,8 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
+import { tiptapExtensions } from "@/lib/tiptap-extensions";
 import {
   Bold as BoldIcon,
   Italic as ItalicIcon,
@@ -26,7 +25,7 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ initialContent, editable, onChange }: RichTextEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit.configure({ heading: { levels: [1, 2] } }), Underline],
+    extensions: tiptapExtensions,
     content: initialContent as unknown as Record<string, unknown>,
     editable,
     immediatelyRender: false,
