@@ -2,7 +2,7 @@
 
 - **Source repository:** https://github.com/rmnvg/raftspace-collaborative-editor
 - **Live product URL:** https://raftspace-collaborative-editor.vercel.app
-- **Video URL:** _TODO — see `VIDEO_URL.txt`_
+- **Video URL:** https://youtu.be/opQfaGY_zEU
 
 ## Demo users
 
