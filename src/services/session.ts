@@ -36,3 +36,24 @@ export async function resolveDemoSession(): Promise<DemoSession> {
 export async function findDemoUserById(userId: string): Promise<AppUser | null> {
   return getAppUserById(userId);
 }
+
+// Lightweight identity resolution for routes that only need the acting
+// user's id (not the full user picker list). Identity always comes from the
+// server-side cookie/DB lookup, never from a request body.
+export async function getCurrentUserId(): Promise<string> {
+  const cookieUserId = cookies().get(DEMO_SESSION_COOKIE)?.value;
+  if (cookieUserId) {
+    const user = await getAppUserById(cookieUserId);
+    if (user) return user.id;
+  }
+
+  const users = await listAppUsers();
+  const fallback =
+    users.find((user) => user.name === DEFAULT_DEMO_USER_NAME) ?? users[0];
+  if (!fallback) {
+    throw new Error(
+      "No demo users are seeded. Apply supabase/migrations/20260908010000_init.sql before starting the app.",
+    );
+  }
+  return fallback.id;
+}
