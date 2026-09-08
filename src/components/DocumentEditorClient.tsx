@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AlertCircle, ArrowLeft, FileX2, Share2 } from "lucide-react";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { Header } from "@/components/Header";
+import { ShareDialog } from "@/components/ShareDialog";
 import { formatRelativeTime, getInitials } from "@/lib/format";
 import type { DocumentDetail, TiptapDocument } from "@/types/document";
 
@@ -18,6 +19,7 @@ export function DocumentEditorClient({ documentId }: { documentId: string }) {
   const [document, setDocument] = useState<DocumentDetail | null>(null);
   const [title, setTitle] = useState("");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   const titleRef = useRef("");
   const contentRef = useRef<TiptapDocument | null>(null);
@@ -226,10 +228,9 @@ export function DocumentEditorClient({ documentId }: { documentId: string }) {
                 {document.canManageSharing && (
                   <button
                     type="button"
-                    disabled
-                    title="Sharing is coming in the next step"
-                    aria-label="Share — coming in the next step"
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-500 shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={() => setIsShareDialogOpen(true)}
+                    title="Share this document"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50"
                   >
                     <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
                     Share
@@ -259,6 +260,15 @@ export function DocumentEditorClient({ documentId }: { documentId: string }) {
           />
         </div>
       </main>
+
+      {document.canManageSharing && (
+        <ShareDialog
+          documentId={documentId}
+          ownerId={document.owner.id}
+          open={isShareDialogOpen}
+          onClose={() => setIsShareDialogOpen(false)}
+        />
+      )}
     </div>
   );
 }
